@@ -1,0 +1,26 @@
+{
+  "name": "live-on-stage",
+  "version": "0.0.1",
+  "description": "Detect when elements enter and leave viewport",
+  "author": "Matt Perry <admin@redshiftjs.com>",
+  "homepage": "http://redshiftjs.com",
+  "main": "src/live-on-stage.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/InventingWithMonster/live-on-stage"
+  },
+  "bugs": {
+    "url": "https://github.com/InventingWithMonster/live-on-stage/issues"
+  },
+  "keywords": [
+    "viewport"
+  ],
+  "analyze": true,
+  "license": "MIT",
+  "scripts": {
+    "compile": "webpack src/utils/global.js live-on-stage.global.js -d && webpack src/utils/global.js live-on-stage.global.min.js -p"
+  },
+  "devDependencies": {
+    "webpack": "1.7.2"
+  }
+}

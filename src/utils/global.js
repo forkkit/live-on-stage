@@ -1,0 +1,1 @@
+window.liveOnStage = require('../live-on-stage.js');
