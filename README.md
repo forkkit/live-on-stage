@@ -69,25 +69,36 @@ To add a module, you use the ```.add()``` method. Here's an example module:
 
 ```javascript
 liveOnStage.add({
-    name: 'lazy-load',
-    onScreen: onScreenHandler, // (optional)
-    offScreen: offScreenHandler // (optional)
+    name: 'lazy-load', // (required)
+    defaultBuffer: 100,
+    onScreen: onScreenHandler,
+    offScreen: offScreenHandler
 });
 ```
 
 To fire these onScreen and offScreen events you simply need to add an element like this:
 
 ```html
-<img data-on-stage data-lazy-load="your-image-url.png"></img>
+<img data-on-stage data-lazy-load="your-image-url.png" />
 ```
 
 ## API
 
-### .add()
+### .add(module)
 
-### .track()
+Add a new Live on Stage module. A module is an object with a required ```name``` property, and optional ```onScreen``` and ```offScreen``` methods to be called any time an element with the ```data-your-module-name``` attribute moves on/off screen.
+
+### .cache()
+
+Refreshes the cache of tracked DOM element positions. Is run automatically when a new element is tracked and when the viewport is resized.
 
 ### .scan()
+
+Scans the DOM for elements with the ```data-on-stage``` attribute. This is run automatically on page load, but can be manually run in the event that new DOM elements are added to the page.
+
+### .track(Element/NodeList)
+
+An element or collection of elements to add to the list of tracked elements.
 
 ## Options
 
