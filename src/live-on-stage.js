@@ -1,19 +1,33 @@
 "use strict";
 
-var cache = require('cache.js'),
+var scan = require('scan.js'),
     check = require('check.js'),
-    events = require('events.js'),
     viewport = require('viewport.js');
 
+viewport.measure();
+
 // Initiate Live on Stage
-if (cache()) {
-    events.bind();
+if (scan()) {
+    check();
+
+    
+    
     /*
     events.bind();
     viewport.measure();
     check();
     */
 }
+
+// Check element positions onScroll
+window.addEventListener('scroll', check);
+
+// Recache DOM positions on resize
+document.addEventListener('calmresize', function () {
+    viewport.measure();
+    scan();
+    check();
+});
 
 /*
 module.exports = {
@@ -25,5 +39,5 @@ module.exports = {
 */
 
 module.exports = {
-    cache: cache.refresh
+    scan: scan
 };

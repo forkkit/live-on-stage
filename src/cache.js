@@ -7,8 +7,7 @@ module.exports = {
         return cache;
     },
     
-    refresh: function () {
-        cache = [].prototype.slice.call(document.querySelectorAll('[data-on-stage]'));
-        return cache.length;
+    set: function (elements) {
+        cache = elements;
     }
 };
