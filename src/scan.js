@@ -1,14 +1,15 @@
 "use strict";
 
-var cache = require('cache.js');
+var createShadowElements = require('./shadow/create.js'),
+    check = require('./check.js');
 
 module.exports = function () {
-    // Find all elements with data-on-stage attribute
-    allElements = [].prototype.slice.call(document.querySelectorAll('[data-on-stage]'));
+    var allElements = document.querySelectorAll('[data-on-stage]'),
+        numElements = allElements.length;
     
-    // Cache all elements
-    cache.set(allElements);
-    
-    // Return number of tracked elements
-    return allElements.length;
+    if (numElements) {
+        createShadowElements([].slice.call(allElements));
+        check();
+        return true;
+    }
 };

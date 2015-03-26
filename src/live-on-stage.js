@@ -1,43 +1,18 @@
 "use strict";
 
-var scan = require('scan.js'),
-    check = require('check.js'),
-    viewport = require('viewport.js');
+var check = require('./check.js'),
+    scan = require('./scan.js');
 
-viewport.measure();
-
-// Initiate Live on Stage
-if (scan()) {
-    check();
-
-    
-    
-    /*
-    events.bind();
-    viewport.measure();
-    check();
-    */
-}
-
-// Check element positions onScroll
+// Check all cached elements every time the viewport changes position
 window.addEventListener('scroll', check);
 
-// Recache DOM positions on resize
-document.addEventListener('calmresize', function () {
-    viewport.measure();
-    scan();
-    check();
-});
+// Recache DOM positions when the screen resizes
+document.addEventListener('resize', scan);
 
-/*
-module.exports = {
-    add: ,
-    cache: cache,
-    scan: ,
-    track: 
-};
-*/
+// Scan onload
+scan();
 
+// Export methods
 module.exports = {
-    scan: scan
+    refresh: scan
 };
