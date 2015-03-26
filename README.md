@@ -12,7 +12,7 @@ Download the latest live-on-stage.global.min.js from http://github.com/Inventing
 <script src="/path/to/live-on-stage.global.min.js"></script>
 ```
 
-This will load Cycl to the globally-accessible variable ```liveOnStage```.
+This will load Live on Stage to the globally-accessible variable ```liveOnStage```.
 
 ### NPM (recommended)
 
@@ -42,21 +42,10 @@ When the module is first loaded, it will scan the page for elements with a ```da
 
 These elements will receive onStage and offStage events whenever they enter/leave the viewport.
 
-You can also manually rescan the page in the event that elements have been added/removed:
+You can manually rescan the page in the event that elements have been added/removed:
 
 ```javascript
-liveOnStage.scan();
-```
-
-Finally, elements can be added manually in your JavaScript with ```.track()```:
-
-```javascript
-var yourElement = document.getElementById('logo'),
-    multipleElements = document.querySelectorAll('li');
-    
-liveOnStage
-    .track(yourElement)
-    .track(multipleElements);
+liveOnStage.refresh();
 ```
 
 ### Act
@@ -88,17 +77,9 @@ To fire these onscreen and offscreen events you simply need to add an element li
 
 Add a new Live on Stage module. A module is an object with a required ```name``` property, and optional ```onScreen``` and ```offScreen``` methods to be called any time an element with the ```data-your-module-name``` attribute moves on/off screen.
 
-### .cache()
-
-Refreshes the cache of tracked DOM element positions. Is run automatically when a new element is tracked and when the viewport is resized.
-
-### .scan()
+### .refresh()
 
 Scans the DOM for elements with the ```data-on-stage``` attribute. This is run automatically on page load, but can be manually run in the event that new DOM elements are added to the page.
-
-### .track(Element/NodeList)
-
-An element or collection of elements to add to the list of tracked elements.
 
 ## Options
 
