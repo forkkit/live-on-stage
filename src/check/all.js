@@ -2,7 +2,7 @@
 
 var cache = require('../shadow/cache.js'),
     checkSingleElement = require('./single.js'),
-    viewport = require('../viewport.js');
+    viewport = require('../utils/viewport.js');
 
 module.exports = function () {
     var i = 0,

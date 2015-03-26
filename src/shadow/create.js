@@ -1,7 +1,7 @@
 "use strict";
 
 var cache = require('./cache.js'),
-    viewport = require('../viewport.js'),
+    viewport = require('../utils/viewport.js'),
     scrollTop, scrollLeft,
 
     /*

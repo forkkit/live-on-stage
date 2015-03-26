@@ -1,7 +1,7 @@
 "use strict";
 
 var notify = require('./notify.js'),
-    viewport = require('../viewport.js'),
+    viewport = require('../utils/viewport.js'),
 
     isOnScreen = function (element) {
         var buffer = element.buffer;

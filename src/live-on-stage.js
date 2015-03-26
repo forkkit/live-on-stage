@@ -1,7 +1,7 @@
 "use strict";
 
 var check = require('./check/all.js'),
-    scan = require('./scan.js');
+    scan = require('./utils/scan.js');
 
 // Check all cached elements every time the viewport changes position
 window.addEventListener('scroll', check);
