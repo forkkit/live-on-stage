@@ -1,7 +1,7 @@
 "use strict";
 
 var createShadowElements = require('./shadow/create.js'),
-    check = require('./check.js');
+    checkAll = require('./check/all.js');
 
 module.exports = function () {
     var allElements = document.querySelectorAll('[data-on-stage]'),
@@ -9,7 +9,7 @@ module.exports = function () {
     
     if (numElements) {
         createShadowElements([].slice.call(allElements));
-        check();
+        checkAll();
         return true;
     }
 };

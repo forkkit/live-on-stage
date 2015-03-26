@@ -76,7 +76,7 @@ liveOnStage.add({
 });
 ```
 
-To fire these onScreen and offScreen events you simply need to add an element like this:
+To fire these onscreen and offscreen events you simply need to add an element like this:
 
 ```html
 <img data-on-stage data-lazy-load="your-image-url.png" />
