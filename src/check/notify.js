@@ -20,9 +20,14 @@ var generateEvent = function (name) {
     Notify DOM element of new onScreen status
 */
 module.exports = function (element, onScreen) {
-    var event = onScreen ? onScreenEvent : offScreenEvent;
+    var event = onScreen ? onScreenEvent : offScreenEvent,
+        dom = element.dom;
     
     element.onScreen = onScreen;
 
-    element.dom.dispatchEvent(event);
+    dom.dispatchEvent(event);
+    
+    if (dom.hasAttribute('data-lazy-load')) {
+        
+    }
 };
