@@ -10,9 +10,6 @@ window.addEventListener('scroll', check);
 // Recache DOM positions when the screen resizes
 document.addEventListener('resize', scan);
 
-// Scan onload
-scan();
-
 // Export methods
 module.exports = {
     add: addModule,

@@ -4,7 +4,9 @@ var generateEvent = function (name) {
         var event;
     
         if (window.CustomEvent) {
-            event = new CustomEvent(name);
+            event = new CustomEvent(name, {
+                bubbles: true
+            });
         } else {
             event = document.createEvent('CustomEvent');
             event.initCustomEvent(name, true, true);

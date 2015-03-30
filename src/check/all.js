@@ -9,7 +9,7 @@ module.exports = function () {
         cacheLength = cache.length;
         
     viewport.update();
-        
+
     for (; i < cacheLength; i++) {
         checkSingleElement(cache[i]);
     }
