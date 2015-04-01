@@ -36,11 +36,11 @@ var liveOnStage = require('live-on-stage');
 
 Track the position of elements by providing a CSS selector to the `track` method and optional onStage and offStage callbacks.
 
-The following code tracks any `video` element with a `data-track-position` attribute and auto plays/pauses when it moves on and off screen:
+The following code tracks any `video` element with a `data-auto-play` attribute and auto plays/pauses when it moves on and off screen:
 
 ```javascript
 liveOnStage.track(
-    'video[data-track-position]',
+    'video[data-auto-play]',
     function (element) {
         element.play();
     },

@@ -1,6 +1,6 @@
 {
   "name": "live-on-stage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Detect when elements enter and leave viewport",
   "author": "Matt Perry <admin@redshiftjs.com>",
   "homepage": "http://redshiftjs.com",
