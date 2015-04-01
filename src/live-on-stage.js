@@ -5,6 +5,8 @@ var cache = require('./utils/cache.js'),
     notify = require('./utils/notify.js'),
     viewport = require('./utils/viewport.js'),
     
+    resizeComplete, // Resize complete timer
+    
     liveOnStage = {
     
         /*
@@ -93,9 +95,15 @@ var cache = require('./utils/cache.js'),
     };
 
 // Check all cached elements every time the viewport changes position
-window.addEventListener('scroll', function () { liveOnStage.check() });
+window.addEventListener('scroll', function () { liveOnStage.check(); });
 
 // Refresh position of all elements when the screen resizes
-window.addEventListener('resize', function () { liveOnStage.refresh() });
+window.addEventListener('resize', function () {
+    clearTimeout(resizeComplete);
+
+    resizeComplete = setTimeout(function () {
+        liveOnStage.refresh();
+    }, 200);
+});
 
 module.exports = liveOnStage;
