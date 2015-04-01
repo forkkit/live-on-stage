@@ -97,3 +97,6 @@ Element will be considered onStage when it has moved into the viewport by an ext
 <div data-buffer="-100"></div>
 ```
    
+## Plugins
+
+**[Lazy Load Images](https://github.com/InventingWithMonster/lazy-load-images)**
