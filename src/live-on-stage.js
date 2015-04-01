@@ -35,11 +35,11 @@ var cache = require('./utils/cache.js'),
                     stopTracking = false;
 
                 // If element is on stage and previously wasn't, fire onstage event
-                if (elementIsOnStage && !element.onScreen) {
+                if (elementIsOnStage && !element.isOnStage) {
                     stopTracking = notify(element, true, thisCache.onStage);
                 
                 // If element isn't on stage and previously was, fire offstage event
-                } else if (!elementIsOnStage && element.onScreen) {
+                } else if (!elementIsOnStage && element.isOnStage) {
                     stopTracking = notify(element, false, thisCache.offStage);
                 }
                 
