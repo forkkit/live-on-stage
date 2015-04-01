@@ -79,7 +79,7 @@ As elements are added or removed from the DOM, you'll want to update the element
 
 ```javascript
 liveOnStage.refresh(); // Refreshes all selections
-liveOnStage.refresh('data-track-position'); // Refreshes elements with provided attribute
+liveOnStage.refresh('[data-track-position]'); // Refreshes elements with data-track-position attribute
 ```
 
 ## Options
