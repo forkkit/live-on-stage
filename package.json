@@ -1,7 +1,7 @@
 {
   "name": "live-on-stage",
-  "version": "1.0.5",
-  "description": "Detect when elements enter and leave viewport",
+  "version": "1.0.6",
+  "description": "Tracks the position of selected DOM elements and fires optional onStage and offStage callbacks.",
   "author": "Matt Perry <admin@redshiftjs.com>",
   "homepage": "http://redshiftjs.com",
   "main": "src/live-on-stage.js",
@@ -18,7 +18,7 @@
   "analyze": true,
   "license": "MIT",
   "scripts": {
-    "compile": "webpack src/utils/global.js live-on-stage.global.js -d && webpack src/utils/global.js live-on-stage.global.min.js -p"
+    "compile": "webpack src/utils/global.js live-on-stage.global.min.js -p"
   },
   "devDependencies": {
     "webpack": "1.7.2"

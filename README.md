@@ -1,6 +1,6 @@
 # Live on Stage
 
-Tracks the position of DOM elements and emits `onscreen` and `offscreen` events.
+Tracks the position of selected DOM elements and fires optional onStage and offStage callbacks.
 
 ## Install
 
