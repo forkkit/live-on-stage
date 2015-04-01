@@ -9,7 +9,7 @@ module.exports = function (elements) {
         var rect = element.getBoundingClientRect(),
             buffer = element.getAttribute('data-buffer');
             
-        if (element.getAttribute('data-stop-tracking') != true) {
+        if (element.getAttribute('data-stop-tracking') !== true) {
             elementArray.push({
                 dom: element,
                 isOnStage: false,

@@ -47,7 +47,9 @@
   \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	window.liveOnStage = __webpack_require__(/*! ../live-on-stage.js */ 1);
+	var liveOnStage = __webpack_require__(/*! ../live-on-stage.js */ 1);
+	
+	window.liveOnStage = liveOnStage;
 
 /***/ },
 /* 1 */
@@ -58,122 +60,179 @@
 
 	"use strict";
 	
-	var check = __webpack_require__(/*! ./check/all.js */ 2),
-	    scan = __webpack_require__(/*! ./utils/scan.js */ 3);
+	var cache = __webpack_require__(/*! ./utils/cache.js */ 2),
+	    cacheElements = __webpack_require__(/*! ./utils/cache-elements.js */ 3),
+	    notify = __webpack_require__(/*! ./utils/notify.js */ 4),
+	    viewport = __webpack_require__(/*! ./utils/viewport.js */ 5),
+	    
+	    liveOnStage = {
+	    
+	        /*
+	            Check element's onScreen position
+	        */
+	        check: function () {
+	            viewport.update();
+	
+	            for (var key in cache) {
+	                if (cache.hasOwnProperty(key)) {
+	                    this.checkCache(key);
+	                }
+	            }
+	        },
+	        
+	        /*
+	            Check individual cache
+	            
+	            @param [object]: Cache to check
+	        */
+	        checkCache: function (key) {
+	            var thisCache = cache[key];
+	
+	            thisCache.elements.forEach(function (element, i) {
+	                var elementIsOnStage = viewport.checkOnStage(element),
+	                    stopTracking = false;
+	
+	                // If element is on stage and previously wasn't, fire onstage event
+	                if (elementIsOnStage && !element.onScreen) {
+	                    stopTracking = notify(element, true, thisCache.onStage);
+	                
+	                // If element isn't on stage and previously was, fire offstage event
+	                } else if (!elementIsOnStage && element.onScreen) {
+	                    stopTracking = notify(element, false, thisCache.offStage);
+	                }
+	                
+	                if (stopTracking) {
+	                    element.dom.setAttribute('data-stop-tracking', true);
+	                    delete thisCache.elements[i];
+	                }
+	            });
+	        },
+	    
+	        /*
+	            Refresh cached elements
+	            
+	            @param [string] (optional): Name of cache to refresh
+	        */
+	        refresh: function (selector) {
+	            // If an attribute has been provided, refresh that cache
+	            if (cache[selector]) {
+	                this.track(selector, cache[selector].onStage, cache[selector].offStage);
+	                
+	            // Or refresh all caches
+	            } else {
+	                for (var key in cache) {
+	                    if (cache.hasOwnProperty(key)) {
+	                        this.track(key, cache[key].onStage, cache[key].offStage);
+	                    }
+	                }
+	            }
+	        },
+	        
+	        /*
+	            Track elements
+	            
+	            @param [string || NodeList]: CSS selector or DOM selection
+	            @param [function]: Function to call when element appears on stage
+	            @param [function]: Function to call when element leaves stage
+	        */
+	        track: function (selector, onStage, offStage) {
+	            var trackElements = (typeof selector == 'string') ? document.querySelectorAll(selector) : selector;
+	            
+	            if (trackElements.length) {
+	                viewport.update();
+	
+	                cache[selector] = {
+	                    elements: cacheElements(trackElements),
+	                    onStage: onStage,
+	                    offStage: offStage
+	                };
+	                
+	                this.check();
+	            }
+	        }
+	    };
 	
 	// Check all cached elements every time the viewport changes position
-	window.addEventListener('scroll', check);
+	window.addEventListener('scroll', function () { liveOnStage.check() });
 	
-	// Recache DOM positions when the screen resizes
-	document.addEventListener('resize', scan);
+	// Refresh position of all elements when the screen resizes
+	window.addEventListener('resize', function () { liveOnStage.refresh() });
 	
-	// Scan onload
-	scan();
-	
-	// Export methods
-	module.exports = {
-	    refresh: scan
-	};
+	module.exports = liveOnStage;
+
 
 /***/ },
 /* 2 */
-/*!**************************!*\
-  !*** ./src/check/all.js ***!
-  \**************************/
+/*!****************************!*\
+  !*** ./src/utils/cache.js ***!
+  \****************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	
-	var cache = __webpack_require__(/*! ../shadow/cache.js */ 4),
-	    checkSingleElement = __webpack_require__(/*! ./single.js */ 5),
-	    viewport = __webpack_require__(/*! ../utils/viewport.js */ 6);
-	
-	module.exports = function () {
-	    var i = 0,
-	        cacheLength = cache.length;
-	        
-	    viewport.update();
-	        
-	    for (; i < cacheLength; i++) {
-	        checkSingleElement(cache[i]);
-	    }
-	};
+	module.exports = {};
 
 /***/ },
 /* 3 */
-/*!***************************!*\
-  !*** ./src/utils/scan.js ***!
-  \***************************/
+/*!*************************************!*\
+  !*** ./src/utils/cache-elements.js ***!
+  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	var createShadowElements = __webpack_require__(/*! ../shadow/create.js */ 7),
-	    checkAll = __webpack_require__(/*! ../check/all.js */ 2);
+	var viewport = __webpack_require__(/*! ./viewport.js */ 5);
 	
-	module.exports = function () {
-	    var allElements = document.querySelectorAll('[data-on-stage]'),
-	        numElements = allElements.length;
+	module.exports = function (elements) {
+	    var elementArray = [];
+	
+	    [].slice.call(elements).forEach(function (element) {
+	        var rect = element.getBoundingClientRect(),
+	            buffer = element.getAttribute('data-buffer');
+	            
+	        if (element.getAttribute('data-stop-tracking') !== true) {
+	            elementArray.push({
+	                dom: element,
+	                isOnStage: false,
+	                buffer: parseInt(buffer) || 0,
+	                top: rect.top + viewport.top,
+	                left: rect.left + viewport.left,
+	                bottom: rect.bottom + viewport.top,
+	                right: rect.right + viewport.left
+	            });
+	        }
+	    });
 	    
-	    if (numElements) {
-	        createShadowElements([].slice.call(allElements));
-	        checkAll();
-	        return true;
-	    }
+	    return elementArray;
 	};
 
 /***/ },
 /* 4 */
 /*!*****************************!*\
-  !*** ./src/shadow/cache.js ***!
-  \*****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = [];
-
-/***/ },
-/* 5 */
-/*!*****************************!*\
-  !*** ./src/check/single.js ***!
+  !*** ./src/utils/notify.js ***!
   \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	var notify = __webpack_require__(/*! ./notify.js */ 8),
-	    viewport = __webpack_require__(/*! ../utils/viewport.js */ 6),
+	/*
+	    Notify DOM element of new onScreen status
+	*/
+	module.exports = function (element, isOnStage, callback) {
+	    element.isOnStage = isOnStage;
 	
-	    isOnScreen = function (element) {
-	        var buffer = element.buffer;
-	
-	        return !(
-	            viewport.bottom < (element.top - buffer) || // Element off bottom
-	            viewport.top > (element.bottom + buffer) || // Element off top
-	            viewport.left > (element.right + buffer) || // Element off left
-	            viewport.right < (element.left - buffer)    // Element off right
-	        );
-	    };
-	
-	module.exports = function (element) {
-	    var elementIsOnStage = isOnScreen(element);
-	
-	    // If element is on stage and previously wasn't, fire onstage event
-	    if (elementIsOnStage && !element.onScreen) {
-	        notify(element, true);
-	    
-	    // If element isn't on stage and previously was, fire offstage event
-	    } else if (!elementIsOnStage && element.onScreen) {
-	        notify(element, false);
+	    if (callback) {
+	        return (callback(element.dom));
 	    }
 	};
 
 /***/ },
-/* 6 */
+/* 5 */
 /*!*******************************!*\
   !*** ./src/utils/viewport.js ***!
   \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+	
 	var docElement = document.documentElement;
 	
 	module.exports = {
@@ -182,100 +241,30 @@
 	    right: 0,
 	    bottom: 0,
 	    
+	    /*
+	        Update viewport measurements
+	    */
 	    update: function () {
 	        this.top = document.body.scrollTop;
 	        this.left = document.body.scrollLeft;
 	        this.bottom = this.top + docElement.clientHeight;
 	        this.right = this.left + docElement.clientWidth;
-	    }
-	};
-
-/***/ },
-/* 7 */
-/*!******************************!*\
-  !*** ./src/shadow/create.js ***!
-  \******************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var cache = __webpack_require__(/*! ./cache.js */ 4),
-	    viewport = __webpack_require__(/*! ../utils/viewport.js */ 6),
-	    scrollTop, scrollLeft,
-	
-	    /*
-	        @param [DOMElement]
-	    */
-	    cacheElement = function (element) {
-	        var rect = element.getBoundingClientRect(),
-	            buffer = element.getAttribute('data-screen-buffer');
-	
-	        cache.push({
-	            dom: element,
-	            onScreen: false,
-	            buffer: parseInt(buffer) || 0,
-	            top: rect.top + scrollTop,
-	            left: rect.left + scrollLeft,
-	            bottom: rect.bottom + scrollTop,
-	            right: rect.right + scrollLeft
-	        });
-	    };
-	
-	/*
-	    @param [array]
-	*/
-	module.exports = function (elements) {
-	    var numElements = elements.length,
-	        i = 0;
-	    
-	    viewport.update();
-	        
-	    scrollTop = viewport.top;
-	    scrollLeft = viewport.left;
-	    
-	    for (; i < numElements; i++) {
-	        cacheElement(elements[i]);
-	    }
-	};
-
-/***/ },
-/* 8 */
-/*!*****************************!*\
-  !*** ./src/check/notify.js ***!
-  \*****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var generateEvent = function (name) {
-	        var event;
-	    
-	        if (window.CustomEvent) {
-	            event = new CustomEvent(name);
-	        } else {
-	            event = document.createEvent('CustomEvent');
-	            event.initCustomEvent(name, true, true);
-	        }
-	        
-	        return event;
 	    },
 	    
-	    onScreenEvent = generateEvent('onscreen'),
-	    offScreenEvent = generateEvent('offscreen');
-	
-	/*
-	    Notify DOM element of new onScreen status
-	*/
-	module.exports = function (element, onScreen) {
-	    var event = onScreen ? onScreenEvent : offScreenEvent,
-	        dom = element.dom;
-	    
-	    element.onScreen = onScreen;
-	
-	    dom.dispatchEvent(event);
-	    
-	    if (dom.hasAttribute('data-lazy-load')) {
+	    /*
+	        Check if element is within viewport
 	        
+	        @param [object]: Cached element
+	    */
+	    checkOnStage: function (element) {
+	        var buffer = element.buffer;
+	    
+	        return !(
+	            this.bottom < (element.top - buffer) || // Element off bottom
+	            this.top > (element.bottom + buffer) || // Element off top
+	            this.left > (element.right + buffer) || // Element off left
+	            this.right < (element.left - buffer)    // Element off right
+	        );
 	    }
 	};
 
