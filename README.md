@@ -87,12 +87,12 @@ liveOnStage.refresh('[data-track-position]'); // Refreshes elements with data-tr
 ### Buffer
 To add a buffer to the viewport on a per-element basis, you can add a `data-buffer` attribute:
             
-Will add 100 pixels of visibility to the beginning and end of viewport
+Element will be considered onStage within 100px of the viewport:
 ```html
 <div data-buffer="100"></div>
 ```
             
-Will remove 100 pixels of visibility either side of viewport
+Element will be considered onStage when it has moved into the viewport by an extra 100px:
 ```html
 <div data-buffer="-100"></div>
 ```

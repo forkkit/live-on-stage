@@ -1,6 +1,6 @@
 {
   "name": "live-on-stage",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Tracks the position of selected DOM elements and fires optional onStage and offStage callbacks.",
   "author": "Matt Perry <admin@redshiftjs.com>",
   "homepage": "http://redshiftjs.com",
