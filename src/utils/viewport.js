@@ -1,3 +1,5 @@
+"use strict";
+
 var docElement = document.documentElement;
 
 module.exports = {
