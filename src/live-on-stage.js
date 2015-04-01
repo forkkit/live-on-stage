@@ -1,11 +1,9 @@
 "use strict";
 
 var cache = require('./utils/cache.js'),
-    isOnScreen = require('./utils/is-on-screen.js'),
+    cacheElements = require('./utils/cache-elements.js'),
     notify = require('./utils/notify.js'),
     viewport = require('./utils/viewport.js'),
-    
-    STOP_TRACKING = 'data-stop-tracking',
     
     liveOnStage = {
     
@@ -13,34 +11,41 @@ var cache = require('./utils/cache.js'),
             Check element's onScreen position
         */
         check: function () {
-            var thisCache;
-
             viewport.update();
 
             for (var key in cache) {
                 if (cache.hasOwnProperty(key)) {
-                    thisCache = cache[key];
-
-                    thisCache.elements.forEach(function (element, i) {
-                        var elementIsOnStage = isOnScreen(element),
-                            stopTracking = false;
-
-                        // If element is on stage and previously wasn't, fire onstage event
-                        if (elementIsOnStage && !element.onScreen) {
-                            stopTracking = notify(element, true, thisCache.onStage);
-                        
-                        // If element isn't on stage and previously was, fire offstage event
-                        } else if (!elementIsOnStage && element.onScreen) {
-                            stopTracking = notify(element, false, thisCache.offStage);
-                        }
-                        
-                        if (stopTracking) {
-                            element.dom.setAttribute(STOP_TRACKING, true);
-                            delete thisCache.elements[i];
-                        }
-                    });
+                    this.checkCache(key);
                 }
             }
+        },
+        
+        /*
+            Check individual cache
+            
+            @param [object]: Cache to check
+        */
+        checkCache: function (key) {
+            var thisCache = cache[key];
+
+            thisCache.elements.forEach(function (element, i) {
+                var elementIsOnStage = viewport.checkOnStage(element),
+                    stopTracking = false;
+
+                // If element is on stage and previously wasn't, fire onstage event
+                if (elementIsOnStage && !element.onScreen) {
+                    stopTracking = notify(element, true, thisCache.onStage);
+                
+                // If element isn't on stage and previously was, fire offstage event
+                } else if (!elementIsOnStage && element.onScreen) {
+                    stopTracking = notify(element, false, thisCache.offStage);
+                }
+                
+                if (stopTracking) {
+                    element.dom.setAttribute('data-stop-tracking', true);
+                    delete thisCache.elements[i];
+                }
+            });
         },
     
         /*
@@ -48,10 +53,10 @@ var cache = require('./utils/cache.js'),
             
             @param [string] (optional): Name of cache to refresh
         */
-        refresh: function (attr) {
+        refresh: function (selector) {
             // If an attribute has been provided, refresh that cache
-            if (cache[attr]) {
-                this.track(attr, cache[attr].onStage, cache[attr].offStage);
+            if (cache[selector]) {
+                this.track(selector, cache[selector].onStage, cache[selector].offStage);
                 
             // Or refresh all caches
             } else {
@@ -66,42 +71,21 @@ var cache = require('./utils/cache.js'),
         /*
             Track elements
             
-            @param [string]: Data attribute to track
+            @param [string || NodeList]: CSS selector or DOM selection
             @param [function]: Function to call when element appears on stage
             @param [function]: Function to call when element leaves stage
         */
-        track: function (attr, onStage, offStage) {
-            var trackElements = document.querySelectorAll('[' + attr + ']'),
-                thisCache;
+        track: function (selector, onStage, offStage) {
+            var trackElements = (typeof selector == 'string') ? document.querySelectorAll(selector) : selector;
             
             if (trackElements.length) {
-                cache[attr] = {
-                    elements: [],
+                viewport.update();
+
+                cache[selector] = {
+                    elements: cacheElements(trackElements),
                     onStage: onStage,
                     offStage: offStage
                 };
-                
-                thisCache = cache[attr].elements;
-        
-                viewport.update();
-    
-                // Iterate over a an array of our DOM selection
-                [].slice.call(trackElements).forEach(function (element) {
-                    var rect = element.getBoundingClientRect(),
-                        buffer = element.getAttribute('data-screen-buffer');
-                
-                    if (!element.hasAttribute(STOP_TRACKING)) {
-                        thisCache.push({
-                            dom: element,
-                            isOnStage: false,
-                            buffer: parseInt(buffer) || 0,
-                            top: rect.top + viewport.top,
-                            left: rect.left + viewport.left,
-                            bottom: rect.bottom + viewport.top,
-                            right: rect.right + viewport.left
-                        });
-                    }
-                });
                 
                 this.check();
             }

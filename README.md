@@ -32,23 +32,46 @@ var liveOnStage = require('live-on-stage');
 
 ### Track elements
 
-**.track(attribute, onStage, offStage)**
+**.track(**selector [*string || NodeList*]**,** onStage [*function*]**,** offStage [*function*]**)**
 
-Track the position of elements by providing an attribute to the `track` method and optional onStage and offStage callbacks.
+Track the position of elements by providing a CSS selector to the `track` method and optional onStage and offStage callbacks.
 
-The following code tracks any element with a `data-track-position` attribute:
+The following code tracks any `video` element with a `data-track-position` attribute and auto plays/pauses when it moves on and off screen:
 
 ```javascript
-liveOnStage.track('data-track-position', function (element) {
-    // Fires when element moves into viewport
-});
+liveOnStage.track(
+    'video[data-track-position]',
+    function (element) {
+        element.play();
+    },
+    function (element) {
+        element.pause();
+    }
+);
 ```
 
-You can track as many different groups of elements as you like.
+You can track as many different groups of elements as you like, each with their own callbacks.
 
 ### Stop tracking an element
 
-When an onStage or offStage callback returns `true`, Live on Stage will stop tracking that element.
+When an onStage or offStage callback returns `true`, Live on Stage will stop tracking that element. For instance, here's an example image lazy loader that stops tracking when the image has moved on screen:
+
+```javascript
+liveOnStage.track(
+    'img[data-lazy-load]',
+    function (element) {
+        var src = element.getAttribute('data-lazy-load');
+        
+        element.addEventListener('load', function () {
+            element.classList.add('show');
+        });
+
+        element.setAttribute('src', src);
+        
+        return true; // This will remove our element from being tracked
+    }
+);
+``` 
 
 ### Refresh a selection
 
@@ -66,15 +89,15 @@ To add a buffer to the viewport on a per-element basis, you can add a data-stage
             
 Will add 100 pixels of visibility to the beginning and end of viewport
 ```html
-<div data-stage-buffer="100"></div>
+<div data-buffer="100"></div>
 ```
             
 Will remove 100 pixels of visibility either side of viewport
 ```html
-<div data-stage-buffer="-100"></div>
+<div data-buffer="-100"></div>
 ```
 
 If viewport is 500px high, this will add 50px of visibility
 ```html
-<div data-stage-buffer="10%"></div>
+<div data-buffer="10%"></div>
 ```          
