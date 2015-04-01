@@ -54,7 +54,7 @@ You can track as many different groups of elements as you like, each with their 
 
 ### Stop tracking an element
 
-When an onStage or offStage callback returns `true`, Live on Stage will stop tracking that element. For instance, here's an example image lazy loader that stops tracking when the image has moved on screen:
+When an onStage or offStage callback returns `true`, Live on Stage will stop tracking that element. For instance, here's a (very) simple image lazy loader that stops tracking when the image has moved on screen:
 
 ```javascript
 liveOnStage.track(
